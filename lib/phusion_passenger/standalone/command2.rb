@@ -184,21 +184,19 @@ private
 			pid_basename = "passenger.#{@options[:port]}.pid"
 			log_basename = "passenger.#{@options[:port]}.log"
 		end
-		if @args.empty?
-			if AppFinder.looks_like_app_directory?(".")
-				@options[:pid_file] ||= File.absolute_path_no_resolve("tmp/pids/#{pid_basename}")
-				@options[:log_file] ||= File.absolute_path_no_resolve("log/#{log_basename}")
-				if create_subdirs
-					ensure_directory_exists(File.dirname(@options[:pid_file]))
-					ensure_directory_exists(File.dirname(@options[:log_file]))
-				end
-			else
-				@options[:pid_file] ||= File.absolute_path_no_resolve(pid_basename)
-				@options[:log_file] ||= File.absolute_path_no_resolve(log_basename)
+    
+		app_directory = @args[0] || '.'
+    
+		if AppFinder.looks_like_app_directory?(app_directory)
+			@options[:pid_file] ||= File.absolute_path_no_resolve(File.join(app_directory, "tmp/pids/#{pid_basename}"))
+			@options[:log_file] ||= File.absolute_path_no_resolve(File.join(app_directory, "log/#{log_basename}"))
+			if create_subdirs
+				ensure_directory_exists(File.dirname(@options[:pid_file]))
+				ensure_directory_exists(File.dirname(@options[:log_file]))
 			end
 		else
-			@options[:pid_file] ||= File.absolute_path_no_resolve(File.join(@args[0], pid_basename))
-			@options[:log_file] ||= File.absolute_path_no_resolve(File.join(@args[0], log_basename))
+			@options[:pid_file] ||= File.absolute_path_no_resolve(pid_basename)
+			@options[:log_file] ||= File.absolute_path_no_resolve(log_basename)
 		end
 	end
 
